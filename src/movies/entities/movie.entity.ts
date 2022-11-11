@@ -18,8 +18,8 @@ export class Movie {
     @Column('text')
     synopsis: string;
 
-    @Column()
-    releaseDate: number;
+    @Column('date')
+    releaseDate: Date;
     @Column('text', {
         unique: true,
     })
@@ -42,9 +42,12 @@ export class Movie {
     mainActor: string;
 
     @Column('int', {
-        default: 0,
+        default: 40,
     })
     duration: number;
+
+    @Column('date')
+    createdOn: Date;
 
     @BeforeInsert()
     checkSlugInsert() {
@@ -57,6 +60,12 @@ export class Movie {
             .replaceAll(' ', '_')
             .replaceAll("'", '');
     }
+    @BeforeInsert()
+    checkDateInsert() {
+        if (!this.createdOn) {
+            this.createdOn = new Date();
+        }
+    }
 
     @BeforeUpdate()
     checkSlugUpdate() {
@@ -68,5 +77,11 @@ export class Movie {
             .toLowerCase()
             .replaceAll(' ', '_')
             .replaceAll("'", '');
+    }
+    @BeforeUpdate()
+    checkDateUpdate() {
+        if (!this.createdOn) {
+            this.createdOn = new Date();
+        }
     }
 }
