@@ -19,13 +19,13 @@ import path from 'path';
             autoLoadEntities: true,
             synchronize: true,
         }),
-        I18nModule.forRoot({
-            fallbackLanguage: 'es',
-            loaderOptions: {
-                path: path.join(__dirname, '/i18n/'),
-                watch: true,
-            },
-        }),
+        // I18nModule.forRoot({
+        //     fallbackLanguage: 'es',
+        //     loaderOptions: {
+        //         path: path.join(__dirname, '/i18n/'),
+        //         watch: true,
+        //     },
+        // }),
         MoviesModule,
         CommonModule,
     ],

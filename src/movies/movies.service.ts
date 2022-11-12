@@ -1,26 +1,70 @@
-import { Injectable } from '@nestjs/common';
+import {
+    BadRequestException,
+    Injectable,
+    InternalServerErrorException,
+    Logger,
+    NotFoundException,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { I18nContext } from 'nestjs-i18n';
+import { Repository } from 'typeorm';
 import { CreateMovieDto } from './dto/create-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
+import { Movie } from './entities/movie.entity';
 
 @Injectable()
 export class MoviesService {
-  create(createMovieDto: CreateMovieDto) {
-    return 'This action adds a new movie';
-  }
+    private readonly logger = new Logger('MoviesService');
+    constructor(
+        @InjectRepository(Movie)
+        private readonly movieRepository: Repository<Movie>,
+    ) {}
 
-  findAll() {
-    return `This action returns all movies`;
-  }
+    async create(createMovieDto: CreateMovieDto /*, i18n: I18nContext*/) {
+        try {
+            const movie = await this.movieRepository.create(createMovieDto);
+            await this.movieRepository.save(movie);
+            return movie;
+        } catch (error) {
+            this.logger.error(error);
+            throw new InternalServerErrorException(
+                'No se ha podido procesar la petición',
+            );
+            /*i18n.t('messages.INTERNALSERVERERROR')*/
+        }
+    }
 
-  findOne(id: number) {
-    return `This action returns a #${id} movie`;
-  }
+    async findAll() {
+        const movies = await this.movieRepository.find();
+        return movies;
+    }
 
-  update(id: number, updateMovieDto: UpdateMovieDto) {
-    return `This action updates a #${id} movie`;
-  }
+    findOne(id: number) {
+        return `This action returns a #${id} movie`;
+    }
 
-  remove(id: number) {
-    return `This action removes a #${id} movie`;
-  }
+    async update(id: string, updateMovieDto: UpdateMovieDto) {
+        const movie = await this.movieRepository.preload({
+            id: id,
+            ...updateMovieDto,
+        });
+
+        if (!movie) {
+            throw new NotFoundException(`La película no se ha encontrado`);
+        }
+
+        try {
+            await this.movieRepository.save(movie);
+            return movie;
+        } catch (error) {
+            this.logger.error(error);
+            throw new InternalServerErrorException(
+                'No se ha podido procesar la petición',
+            );
+        }
+    }
+
+    remove(id: number) {
+        return `This action removes a #${id} movie`;
+    }
 }
