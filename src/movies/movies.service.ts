@@ -6,6 +6,7 @@ import {
     NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { validate as isUUID } from 'uuid';
 import { I18nContext } from 'nestjs-i18n';
 import { Repository } from 'typeorm';
 import { CreateMovieDto } from './dto/create-movie.dto';
@@ -39,8 +40,25 @@ export class MoviesService {
         return movies;
     }
 
-    findOne(id: number) {
-        return `This action returns a #${id} movie`;
+    async findOne(term: string) {
+        let movie: Movie;
+
+        if (isUUID(term)) {
+            movie = await this.movieRepository.findOneBy({ id: term });
+        } else {
+            const queryBuilder = this.movieRepository.createQueryBuilder();
+            movie = await queryBuilder
+                .where(`name=:name or slug=:slug `, {
+                    name: term,
+                    slug: term,
+                })
+                .getOne();
+        }
+
+        if (!movie) {
+            throw new NotFoundException(`Pelicula no encontrada`);
+        }
+        return movie;
     }
 
     async update(id: string, updateMovieDto: UpdateMovieDto) {
@@ -64,7 +82,15 @@ export class MoviesService {
         }
     }
 
-    remove(id: number) {
-        return `This action removes a #${id} movie`;
+    async remove(id: string) {
+        const movie = await this.movieRepository.findOneBy({ id: id });
+
+        if (!movie) {
+            throw new NotFoundException(`Pelicula no encontrada`);
+        } else {
+            await this.movieRepository.remove(movie);
+        }
+
+        return;
     }
 }
