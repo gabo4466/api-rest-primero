@@ -26,11 +26,7 @@ export class MoviesService {
             await this.movieRepository.save(movie);
             return movie;
         } catch (error) {
-            this.logger.error(error);
-            throw new InternalServerErrorException(
-                'No se ha podido procesar la petición',
-            );
-            /*i18n.t('messages.INTERNALSERVERERROR')*/
+            this.exceptionHandler(error);
         }
     }
 
@@ -57,14 +53,25 @@ export class MoviesService {
             await this.movieRepository.save(movie);
             return movie;
         } catch (error) {
-            this.logger.error(error);
-            throw new InternalServerErrorException(
-                'No se ha podido procesar la petición',
-            );
+            this.exceptionHandler(error);
         }
     }
 
     remove(id: number) {
         return `This action removes a #${id} movie`;
+    }
+
+    private exceptionHandler(error) {
+        this.logger.error(error);
+        if (error.code === '23505') {
+            throw new BadRequestException({
+                errorCode: '23505',
+                details: error.detail,
+            });
+        } else {
+            throw new InternalServerErrorException(
+                'No se ha podido procesar la petición',
+            );
+        }
     }
 }
