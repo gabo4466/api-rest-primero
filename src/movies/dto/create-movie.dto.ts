@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import {
     IsArray,
     IsDate,
@@ -16,6 +17,7 @@ export class CreateMovieDto {
     @IsString()
     @MinLength(1)
     synopsis: string;
+    @Type(() => Date)
     @IsDate()
     releaseDate: Date;
     @IsArray()
