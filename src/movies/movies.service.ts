@@ -11,6 +11,8 @@ import { Repository } from 'typeorm';
 import { CreateMovieDto } from './dto/create-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
 import { Movie } from './entities/movie.entity';
+import { PaginationDto } from '../common/dtos/pagination.dto';
+import { skip } from 'rxjs';
 
 @Injectable()
 export class MoviesService {
@@ -34,8 +36,17 @@ export class MoviesService {
         }
     }
 
-    async findAll() {
-        const movies = await this.movieRepository.find();
+    async findAll(paginationdto: PaginationDto) {
+        const { limit = 0, offset = 0 } = paginationdto;
+        const movies = await this.movieRepository.find({
+            take: limit,
+            skip: offset,
+        });
+        if (!movies) {
+            throw new NotFoundException(
+                `No se han encontrado películas registradas`,
+            );
+        }
         return movies;
     }
 
