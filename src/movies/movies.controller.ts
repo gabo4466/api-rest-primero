@@ -31,9 +31,9 @@ export class MoviesController {
         return this.moviesService.findAll(paginationDto);
     }
 
-    @Get(':id')
-    findOne(@Param('id') id: string) {
-        return this.moviesService.findOne(+id);
+    @Get(':term')
+    findOne(@Param('term') term: string) {
+        return this.moviesService.findOne(term);
     }
 
     @Patch(':id')
@@ -45,7 +45,7 @@ export class MoviesController {
     }
 
     @Delete(':id')
-    remove(@Param('id') id: string) {
-        return this.moviesService.remove(+id);
+    remove(@Param('id', ParseUUIDPipe) id: string) {
+        return this.moviesService.remove(id);
     }
 }
