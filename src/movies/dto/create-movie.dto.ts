@@ -18,17 +18,19 @@ export class CreateMovieDto {
     synopsis: string;
     @IsDate()
     releaseDate: Date;
-    @IsString({ each: true })
     @IsArray()
-    @IsIn([
-        'Action',
-        'Adventure',
-        'Drama',
-        'Romance',
-        'Horror',
-        'Suspense',
-        'Comedy',
-    ])
+    @IsIn(
+        [
+            'Action',
+            'Adventure',
+            'Drama',
+            'Romance',
+            'Horror',
+            'Suspense',
+            'Comedy',
+        ],
+        { each: true },
+    )
     genre: string[];
     @IsInt()
     @IsPositive()
