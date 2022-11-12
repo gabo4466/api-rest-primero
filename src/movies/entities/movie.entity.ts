@@ -47,7 +47,7 @@ export class Movie {
     duration: number;
 
     @Column('date')
-    createdOn: Date;
+    lastUpdated: Date;
 
     @BeforeInsert()
     checkSlugInsert() {
@@ -62,16 +62,14 @@ export class Movie {
     }
     @BeforeInsert()
     checkDateInsert() {
-        if (!this.createdOn) {
-            this.createdOn = new Date();
+        if (!this.lastUpdated) {
+            this.lastUpdated = new Date();
         }
     }
 
     @BeforeUpdate()
     checkSlugUpdate() {
-        if (!this.slug) {
-            this.slug = this.name;
-        }
+        this.slug = this.name;
 
         this.slug = this.slug
             .toLowerCase()
@@ -80,8 +78,6 @@ export class Movie {
     }
     @BeforeUpdate()
     checkDateUpdate() {
-        if (!this.createdOn) {
-            this.createdOn = new Date();
-        }
+        this.lastUpdated = new Date();
     }
 }
