@@ -3,12 +3,12 @@ import {
     BeforeUpdate,
     Column,
     Entity,
-    PrimaryColumn,
+    PrimaryGeneratedColumn,
 } from 'typeorm';
 
 @Entity()
 export class Movie {
-    @PrimaryColumn('uuid')
+    @PrimaryGeneratedColumn('uuid')
     id: string;
     @Column('text', {
         unique: true,
