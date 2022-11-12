@@ -2,6 +2,7 @@ import {
     BadRequestException,
     Injectable,
     InternalServerErrorException,
+    Logger,
     NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -13,6 +14,7 @@ import { Movie } from './entities/movie.entity';
 
 @Injectable()
 export class MoviesService {
+    private readonly logger = new Logger('MoviesService');
     constructor(
         @InjectRepository(Movie)
         private readonly movieRepository: Repository<Movie>,
@@ -24,6 +26,7 @@ export class MoviesService {
             await this.movieRepository.save(movie);
             return movie;
         } catch (error) {
+            this.logger.error(error);
             throw new InternalServerErrorException(
                 'No se ha podido procesar la petición',
             );
@@ -31,8 +34,9 @@ export class MoviesService {
         }
     }
 
-    findAll() {
-        return `This action returns all movies`;
+    async findAll() {
+        const movies = await this.movieRepository.find();
+        return movies;
     }
 
     findOne(id: number) {
@@ -53,6 +57,7 @@ export class MoviesService {
             await this.movieRepository.save(movie);
             return movie;
         } catch (error) {
+            this.logger.error(error);
             throw new InternalServerErrorException(
                 'No se ha podido procesar la petición',
             );
